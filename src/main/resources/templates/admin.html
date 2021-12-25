@@ -1,0 +1,339 @@
+<!DOCTYPE HTML>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title th:utext="#{panel.title.admin}">Admin panel</title>
+
+    <link th:rel="stylesheet" th:href="@{assets/bootstrap-select-1.13.14/dist/css/bootstrap-select.css}"/>
+    <link th:rel="stylesheet" th:href="@{webjars/bootstrap/4.6.1/css/bootstrap.min.css} "/>
+</head>
+<body>
+
+<header>
+    <nav class="navbar navbar-expand navbar-dark bg-dark justify-content-between sticky-top">
+        <div sec:authorize="isAuthenticated()" class="navbar-brand col-md-auto">
+            <strong sec:authentication="name">NAME</strong>
+            <span th:utext="#{main.title.roles}">..</span>
+            <span th:utext="${stringRoles}">ROLES</span>
+        </div>
+        <div class="navbar-brand col-md-auto">
+            <a th:href="@{logout}" class="nav-link text-light" th:utext="#{main.button.logout}">Logout</a>
+        </div>
+    </nav>
+</header>
+
+<div class="row">
+        <!-- начало ВЕРТИКАЛЬНАЯ КОЛОНКА -->
+    <div class="col-2">
+        <div class="nav flex-column nav-pills" role="tablist" aria-orientation="vertical" sec:authorize="isAuthenticated()">
+            <a class="nav-link active" role="tab" th:href="@{/admin}">ADMIN</a>
+            <a class="nav-link" role="tab" sec:authorize="hasRole('USER')" th:href="@{/user}">USER</a>
+        </div>
+    </div>
+        <!-- конец ВЕРТИКАЛЬНАЯ КОЛОНКА -->
+
+    <!-- начало ИНФОРМАЦИОННАЯ ПАНЕЛЬ -->
+    <div class="col bg-light">
+        <h2 class="row mt-3 pl-3" th:utext="#{panel.title.admin}"></h2>
+            <div class="row pl-3" style="width: 99%;">
+                <div class="col">
+
+                    <!-- начало НАЗВАНИЯ ТАБОВ -->
+                    <ul class="nav nav-tabs" id="myTab" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true" th:utext="#{tab.tblusers.name}">TAB1</a>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false" th:utext="#{tab.adduser.name}">TAB2</a>
+                        </li>
+                    </ul>
+                    <!-- конец НАЗВАНИЯ ТАБОВ -->
+
+
+<!-- начало СОДЕРЖИМОЕ ТАБОВ -->
+                    <div class="tab-content" id="myTabContent">
+
+
+<!-- Содержимое закладки Таблица пользователей-->
+                        <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+                            <div class="row mt-2 ml-2 bg-light">
+                                <h4 th:utext="#{tblusers.label.head}">
+                                    Label head
+                                </h4>
+                            </div>
+                            <!-- Скрытый текстовый блок для модальных окон -->
+                            <input id="textEdit" type="hidden" th:value="#{tblusers.btn.edit}"/>
+                            <input id="titleEdit" type="hidden" th:value="#{modal.title.edit}"/>
+                            <input id="titleDelete" type="hidden" th:value="#{modal.title.delete}"/>
+
+                            <div class="row bg-white">
+                                <div class="col-md-12 table-light">
+                                    <table class="table table-striped" aria-describedby="listUsers">
+                                        <thead>
+                                        <tr>
+                                            <th id="id" th:utext="#{user.label.id}">Name</th>
+                                            <th id="name" th:utext="#{user.label.name}">Name</th>
+                                            <th id="lastName" th:utext="#{user.label.lastName}">Last Name</th>
+                                            <th id="age" th:utext="#{user.label.age}">Age</th>
+                                            <th id="email" th:utext="#{user.label.email}">E-mail</th>
+                                            <th id="role" th:utext="#{user.label.role}">Role</th>
+                                            <th id="buttonUpdate" th:utext="#{tblusers.btn.edit}">Update</th>
+                                            <th id="buttonDelete" th:utext="#{tblusers.btn.delete}">Delete</th>
+                                        </tr>
+                                        </thead>
+
+                                        <tbody>
+                                        <tr th:each ="u : ${listUsers}">
+                                            <td th:utext="${u.id}">...</td>
+                                            <td th:utext="${u.name}">...</td>
+                                            <td th:utext="${u.lastName}">...</td>
+                                            <td th:utext="${u.age}">...</td>
+                                            <td th:utext="${u.email}">...</td>
+                                            <td>
+                                                <span th:each="role : ${u.enumRoles}"
+                                                      th:utext="${role} + ' '">
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <a class="btn btn-primary btnEdit" th:href="@{{home}/findOne/{id}(home=${urlRoot}, id=${u.id})}" th:utext="#{tblusers.btn.edit}">Edit</a>
+                                            </td>
+                                            <td>
+                                                <a class="btn btn-danger btnDelete" th:href="@{{home}/findOne/{id}(home=${urlRoot}, id=${u.id})}" th:utext="#{tblusers.btn.delete}">Delete</a>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                        </div>
+<!-- конец Содержимое закладки Таблица пользователей-->
+
+
+
+<!-- Содержимое закладки Новый пользователь-->
+                        <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+                            <div class="row mt-2 ml-2 bg-light">
+                                <h4 th:utext="#{adduser.label.head}">
+                                    Label head
+                                </h4>
+                            </div>
+
+                            <!-- начало ДАННЫЕ ПОЛЬЗОВАТЕЛЯ -->
+                            <div class="row text-center justify-content-center bg-white">
+                                <form class="w-25" th:action="@{{home}/save(home=${urlRoot})}" th:object="${user}" th:method="post">
+                                    <input type="hidden" th:field="${user.id}"/>
+
+                                    <div class="form-group">
+                                        <label for="inputName" class="font-weight-bold" th:utext="#{user.label.name}">Name</label>
+                                        <span th:if="${#fields.hasErrors('name')}" th:style="${'color:red;'}" th:errors="*{name}">Name Error</span>
+                                        <input id="inputName" class="form-control form-control-sm" type="text" style="background: #F5EAC1;" th:field="*{name}" th:placeholder="#{user.label.name}" />
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="inputLast" class="font-weight-bold" th:utext="#{user.label.lastName}">Lastname</label>
+                                        <span th:if="${#fields.hasErrors('lastName')}" th:style="${'color:red;'}" th:errors="*{lastName}">LastName Error</span>
+                                        <input id="inputLast" class="form-control form-control-sm" type="text" style="background: #F5EAC1;" th:field="*{lastName}" th:placeholder="#{user.label.lastName}" />
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="inputAge" class="font-weight-bold" th:utext="#{user.label.age}">Age</label>
+                                        <span th:if="${#fields.hasErrors('age')}" th:style="${'color:red;'}" th:errors="*{age}">Age Error</span>
+                                        <input id="inputAge" class="form-control form-control-sm" type="number" th:field="*{age}" th:placeholder="#{user.label.age}" />
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="inputEmail" class="font-weight-bold" th:utext="#{user.label.email}">Email</label>
+                                        <span th:if="${#fields.hasErrors('email')}" th:style="${'color:red;'}" th:errors="*{email}">Email Error</span>
+                                        <input id="inputEmail" class="form-control form-control-sm" type="email" style="background: #F5EAC1;" th:field="*{email}" th:placeholder="#{user.label.email}" />
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="inputPassword" class="font-weight-bold" th:utext="#{user.label.password}">Password</label>
+                                        <span th:if="${#fields.hasErrors('password')}" th:style="${'color:red;'}" th:errors="*{password}">Password Error</span>
+                                        <input id="inputPassword" class="form-control form-control-sm" type="password" th:field="*{password}" th:placeholder="#{user.label.password}" />
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="selectRole" class="font-weight-bold">Role</label>
+                                        <select multiple id="selectRole" class="form-control" th:field="*{enumRoles}" size="2" aria-describedby="roleHelp">
+                                            <option th:each="role : ${T(jm.spring.rest.entity.Roles).values()}"
+                                                    th:value="${role}"
+                                                    th:utext="${role}"> Как сделать активной строку в зависимости от имеющейся роли и не работает selectpicker
+                                            </option>
+                                        </select>
+                                        <small id="roleHelp" class="form-text text-muted text-left" th:utext="#{adduser.roles.hint}">Ctrl+</small>
+                                    </div>
+                                    <button class="btn btn-success" type="submit" th:inline="text">[[#{adduser.btn.add}]]</button>
+                                </form>
+                            </div>
+                            <!-- конец ДАННЫЕ ПОЛЬЗОВАТЕЛЯ -->
+                        </div>
+<!-- конец Содержимое закладки Новый пользователь-->
+
+                    </div>
+<!-- конец СОДЕРЖИМОЕ ТАБОВ -->
+                </div>
+            </div>
+    </div>
+    <!-- конец ИНФОРМАЦИОННАЯ ПАНЕЛЬ -->
+</div>
+
+
+<div class="formEdit">
+    <form id="formModal" th:action="@{{home}/save(home=${urlRoot})}" th:object="${user}" th:method="post">
+        <div aria-hidden="true" aria-labelledby="myModalTitle" class="modal fade"
+             id="myModal" role="dialog"
+             tabindex="-1">
+            <div class="modal-dialog modal-sm" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="myModalTitle">Title</h5>
+                        <button aria-label="Close" class="close" data-dismiss="modal"
+                                type="button">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body text-center justify-content-center">
+                        <div class="form-group">
+                            <input id="idValue" type="hidden" th:field="*{id}"/>
+                            <label class="font-weight-bold" for="idEdit" th:utext="#{user.label.id}">ID</label>
+                            <input class="form-control form-control-sm" id="idEdit" name="idEdit" type="text" value="" disabled/>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="font-weight-bold" for="nameEdit" th:utext="#{user.label.name}">Name</label>
+                            <input class="form-control form-control-sm" id="nameEdit" name="nameEdit" type="text" th:field="*{name}" th:placeholder="#{user.label.name}" />
+                        </div>
+
+                        <div class="form-group">
+                            <label class="font-weight-bold" for="lastNameEdit" th:utext="#{user.label.lastName}">Lastname</label>
+                            <input class="form-control form-control-sm" id="lastNameEdit" type="text" th:field="*{lastName}" th:placeholder="#{user.label.lastName}" />
+                        </div>
+
+                        <div class="form-group">
+                            <label class="font-weight-bold" for="ageEdit" th:utext="#{user.label.age}">Age</label>
+                            <input class="form-control form-control-sm" id="ageEdit" type="number" th:field="*{age}" th:placeholder="#{user.label.age}" />
+                        </div>
+
+                        <div class="form-group">
+                            <label class="font-weight-bold" for="emailEdit" th:utext="#{user.label.email}">Email</label>
+                            <input class="form-control form-control-sm" id="emailEdit" type="text" th:field="*{email}" th:placeholder="#{user.label.email}" />
+                        </div>
+
+                        <div class="form-group" id="grpPassword">
+                            <label class="font-weight-bold" for="passwordEdit" th:utext="#{user.label.password}">Password</label>
+                            <input class="form-control form-control-sm" id="passwordEdit" type="password" th:field="*{password}" th:placeholder="#{user.label.password}" />
+                        </div>
+
+                        <div class="form-group">
+                            <label class="font-weight-bold" for="roleEdit" th:text="#{user.label.role}">Role</label>
+                            <select class="form-control" multiple id="roleEdit" th:field="*{enumRoles}" size="2">
+                                <option th:each="role : ${T(jm.spring.rest.entity.Roles).values()}"
+                                        th:value="${role}"
+                                        th:utext="${role}">
+                                </option>
+                            </select>
+                        </div>
+
+                    </div> <!-- modal-body КОНЕЦ -->
+
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" data-dismiss="modal"
+                                type="button">Close
+                        </button>
+                        <!-- Делаем на форме 2 кнопки и манипулируем видимостью из JS -->
+                        <input class="btn btn-primary" id="btnEditModal" type="submit"  th:value="#{tblusers.btn.edit}"/>
+                        <input class="btn btn-danger" id="btnDeleteModal" type="submit"  th:value="#{tblusers.btn.delete}"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script th:src="@{/webjars/jquery/jquery.min.js}"></script>
+<script th:src="@{/webjars/popper.js/umd/popper.min.js}"></script>
+<script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
+<script th:src="@{assets/bootstrap-select-1.13.14/dist/js/bootstrap-select.js}"></script>
+
+<script>
+    $(document).ready(function(){
+
+        $('.btnDelete, .btnEdit').on('click', function (event) {
+            event.preventDefault();
+            var href = $(this).attr('href');
+            //загружаем данные о пользователе
+            $.get(href, function (user, status) {
+                $('.formEdit #idEdit').val(user.id);
+                $('.formEdit #idValue').val(user.id);
+                $('.formEdit #nameEdit').val(user.name);
+                $('.formEdit #lastNameEdit').val(user.lastName);
+                $('.formEdit #ageEdit').val(user.age);
+                $('.formEdit #emailEdit').val(user.email);
+                $('.formEdit #passwordEdit').val(user.password);
+                //$('.formEdit #roleEdit').val(user.);
+            });
+            //идентифицируем выполняемую операцию
+            var textThis = $(this).text(); //получим Edit или Delete
+            var textEdit = document.getElementById('textEdit').value;
+            if (textThis === textEdit) {
+                //редактирование
+                //установить заголовок
+                $('.formEdit #myModalTitle').text(document.getElementById('titleEdit').value);
+                //показать пароль
+                $('.formEdit #passwordEdit').removeAttr('disabled');
+                document.getElementById('grpPassword').hidden=false;
+                //разблокировать все инпуты
+                $('.formEdit #nameEdit').removeAttr('disabled');
+                $('.formEdit #lastNameEdit').removeAttr('disabled');
+                $('.formEdit #ageEdit').removeAttr('disabled');
+                $('.formEdit #emailEdit').removeAttr('disabled');
+                $('.formEdit #roleEdit').removeAttr('disabled');
+                //скрыть/показать кнопки
+                $('.formEdit #btnEditModal').attr({'type':'submit'});
+                $('.formEdit #btnDeleteModal').attr({'type':'hidden'});
+                //меняем у form аттрибуты action и method
+                var i = href.lastIndexOf('/');
+                if(i > 0) {
+                    var path = href.substring(0,i);
+                    var newHref = path.replace('findOne','save');
+                    $('.formEdit #formModal').attr({'action':newHref});
+                    $('.formEdit #formModal').attr({'method':'post'});
+                    // $('.formEdit #formModal').attr('method','post');
+                }
+            } else {
+                //удаление
+                //установить заголовок
+                $('.formEdit #myModalTitle').text(document.getElementById('titleDelete').value);
+                //скрыть пароль
+                $('.formEdit #passwordEdit').attr({'disabled':'disabled'});
+                document.getElementById('grpPassword').hidden=true;
+                //заблокировать все инпуты
+                $('.formEdit #nameEdit').attr({'disabled':'disabled'});
+                $('.formEdit #lastNameEdit').attr({'disabled':'disabled'});
+                $('.formEdit #ageEdit').attr({'disabled':'disabled'});
+                $('.formEdit #emailEdit').attr({'disabled':'disabled'});
+                $('.formEdit #roleEdit').attr({'disabled':'disabled'});
+                //скрыть/показать кнопки
+                $('.formEdit #btnEditModal').attr({'type':'hidden'});
+                $('.formEdit #btnDeleteModal').attr({'type':'submit'});
+                //меняем у form аттрибуты action и method
+                var newHref = href.replace('findOne','delete');
+                $('.formEdit #formModal').attr({'action':newHref});
+                $('.formEdit #formModal').attr({'method':'get'});
+            }
+            //показываем форму
+            $('.formEdit #myModal').modal("show");
+        });
+    });
+
+</script>
+
+</body>
+</html>
