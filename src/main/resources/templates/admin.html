@@ -34,6 +34,16 @@
             <a class="nav-link active" role="tab" th:href="@{/admin}">ADMIN</a>
             <a class="nav-link" role="tab" sec:authorize="hasRole('USER')" th:href="@{/user}">USER</a>
         </div>
+        <div class="nav flex-column nav-pills" role="tablist" aria-orientation="vertical">
+            <br>
+            <br>
+            <a class="nav-link active" id="btnScript" role="tab" >Script</a>
+            <label id="idLabel">Script</label>
+            <label id="idLabel2">JSON</label>
+            <table id="idUsers" border="1">
+                <tr><th>ID</th><th>Email</th><th>Name</th><th>lastName</th><th>Age</th></tr>
+            </table>
+        </div>
     </div>
         <!-- конец ВЕРТИКАЛЬНАЯ КОЛОНКА -->
 
@@ -100,10 +110,12 @@
                                                 </span>
                                             </td>
                                             <td>
-                                                <a class="btn btn-primary btnEdit" th:href="@{{home}/findOne/{id}(home=${urlRoot}, id=${u.id})}" th:utext="#{tblusers.btn.edit}">Edit</a>
+<!--                                                <a class="btn btn-primary btnEdit" th:href="@{{home}/findOne/{id}(home=${urlRoot}, id=${u.id})}" th:utext="#{tblusers.btn.edit}">Edit</a>-->
+                                                <a class="btn btn-primary btnEdit" id="btnEdit" num="${u.id}" th:utext="#{tblusers.btn.edit}">Edit</a>
                                             </td>
                                             <td>
-                                                <a class="btn btn-danger btnDelete" th:href="@{{home}/findOne/{id}(home=${urlRoot}, id=${u.id})}" th:utext="#{tblusers.btn.delete}">Delete</a>
+<!--                                                <a class="btn btn-danger btnDelete" th:href="@{{home}/findOne/{id}(home=${urlRoot}, id=${u.id})}" th:utext="#{tblusers.btn.delete}">Delete</a>-->
+                                                <a class="btn btn-danger btnDelete" id="btnDelete" th:href="@{/api/users/{id}(home=${urlRoot}, id=${u.id})}" th:utext="#{tblusers.btn.delete}">Delete</a>
                                             </td>
                                         </tr>
                                         </tbody>
@@ -264,8 +276,15 @@
 
 <script>
     $(document).ready(function(){
+        var url = '/api/users';
 
-        $('.btnDelete, .btnEdit').on('click', function (event) {
+        document.getElementById('btnEdit').onclick = function () {
+            var num = $(this).attr('num');
+            alert(num);
+        };
+
+        $('.btnDelete').on('click', function (event) {
+//            $('.btnDelete, .btnEdit').on('click', function (event) {
             event.preventDefault();
             var href = $(this).attr('href');
             //загружаем данные о пользователе
@@ -332,6 +351,48 @@
             $('.formEdit #myModal').modal("show");
         });
     });
+
+    $('#btnScript').on('click', function (event) {
+
+        var url = 'http://localhost:8080/api/users/2';
+        $('#idUsers').append('<tr><td>iddd</td>'+
+            '<td>EEMail</td>' +
+            '<td>NNAAAMMME</td>' +
+            '<td>LASTName</td>' +
+            '<td>AGEEE</td></tr>');
+
+        console.log("Вызываю getJSON");
+        $.getJSON(url, function (data) {
+            console.log(typeof data, data);
+            // var obj = JSON.parse(data);
+            // console.log(typeof obj, obj);
+            //
+            // var x = document.getElementById("brand");
+            // var option = document.createElement("option");
+            // option.text = "hello";
+            // x.add(option);
+
+            // for(var i=0; i<5;i++) {
+             $('#idUsers').append('<tr><td>' + data.id + '</td>'+
+                '<td>' + data.email + '</td>' +
+                '<td>' + data.name + '</td>' +
+                '<td>' + data.lastName + '</td>' +
+                 '<td>' + data.age + '</td></tr>');
+            // }
+
+            // $('#users').append('<tr><td>iddd</td>'+
+            //     '<td>EEMail</td>' +
+            //     '<td>NNAAAMMME</td>' +
+            //     '<td>LASTName</td>' +
+            //     '<td>AGEEE</td></tr>');
+            $('#idLabel2').text('JSON выполнен');
+
+        });
+
+        $('#idLabel').text('Операция выполнена');
+
+
+    }); //btnScript
 
 </script>
 

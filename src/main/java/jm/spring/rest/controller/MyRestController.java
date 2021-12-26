@@ -9,6 +9,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+//POST
+//        localhost:8080/login?j_username=admin&j_password=admin
+
 @RestController
 @RequestMapping("/api")
 public class MyRestController {
@@ -22,11 +25,13 @@ public class MyRestController {
 
     @GetMapping("/users")
     public List<User> getUsers() {
+        System.out.println(">>> MyRestController.getUsers обработал запрос ВСЕ ЮЗЕРЫ");
         return userService.getUsers();
     }
 
     @GetMapping("/users/{id}")
     public User getOneUser(@PathVariable int id) {
+        System.out.println(">>> MyRestController.getOneUser обработал запрос ЮЗЕР с id="+id);
         User user = userService.getUser(id);
         if(user == null) {
             throw new NoDataFoundException("User with id=" + id + " not found into DB");

@@ -1,0 +1,2 @@
+POST
+localhost:8080/login?j_username=admin&j_password=admin
