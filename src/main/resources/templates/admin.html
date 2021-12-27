@@ -34,16 +34,6 @@
             <a class="nav-link active" role="tab" th:href="@{/admin}">ADMIN</a>
             <a class="nav-link" role="tab" sec:authorize="hasRole('USER')" th:href="@{/user}">USER</a>
         </div>
-        <div class="nav flex-column nav-pills" role="tablist" aria-orientation="vertical">
-            <br>
-            <br>
-            <a class="nav-link active" id="btnScript" role="tab" >Script</a>
-            <label id="idLabel">Script</label>
-            <label id="idLabel2">JSON</label>
-            <table id="idUsers" border="1">
-                <tr><th>ID</th><th>Email</th><th>Name</th><th>lastName</th><th>Age</th></tr>
-            </table>
-        </div>
     </div>
         <!-- конец ВЕРТИКАЛЬНАЯ КОЛОНКА -->
 
@@ -97,27 +87,8 @@
                                         </tr>
                                         </thead>
 
-                                        <tbody>
-                                        <tr th:each ="u : ${listUsers}">
-                                            <td th:utext="${u.id}">...</td>
-                                            <td th:utext="${u.name}">...</td>
-                                            <td th:utext="${u.lastName}">...</td>
-                                            <td th:utext="${u.age}">...</td>
-                                            <td th:utext="${u.email}">...</td>
-                                            <td>
-                                                <span th:each="role : ${u.enumRoles}"
-                                                      th:utext="${role} + ' '">
-                                                </span>
-                                            </td>
-                                            <td>
-<!--                                                <a class="btn btn-primary btnEdit" th:href="@{{home}/findOne/{id}(home=${urlRoot}, id=${u.id})}" th:utext="#{tblusers.btn.edit}">Edit</a>-->
-                                                <a class="btn btn-primary btnEdit" id="btnEdit" num="${u.id}" th:utext="#{tblusers.btn.edit}">Edit</a>
-                                            </td>
-                                            <td>
-<!--                                                <a class="btn btn-danger btnDelete" th:href="@{{home}/findOne/{id}(home=${urlRoot}, id=${u.id})}" th:utext="#{tblusers.btn.delete}">Delete</a>-->
-                                                <a class="btn btn-danger btnDelete" id="btnDelete" th:href="@{/api/users/{id}(home=${urlRoot}, id=${u.id})}" th:utext="#{tblusers.btn.delete}">Delete</a>
-                                            </td>
-                                        </tr>
+                                        <tbody id="tableUsersBody">
+                                            <!-- Здесь динамически добавляются пользователи -->
                                         </tbody>
                                     </table>
                                 </div>
@@ -138,42 +109,37 @@
 
                             <!-- начало ДАННЫЕ ПОЛЬЗОВАТЕЛЯ -->
                             <div class="row text-center justify-content-center bg-white">
-                                <form class="w-25" th:action="@{{home}/save(home=${urlRoot})}" th:object="${user}" th:method="post">
+                                <form class="w-25" id="formAddUser" action="#"  method="#">
                                     <input type="hidden" th:field="${user.id}"/>
 
                                     <div class="form-group">
                                         <label for="inputName" class="font-weight-bold" th:utext="#{user.label.name}">Name</label>
-                                        <span th:if="${#fields.hasErrors('name')}" th:style="${'color:red;'}" th:errors="*{name}">Name Error</span>
-                                        <input id="inputName" class="form-control form-control-sm" type="text" style="background: #F5EAC1;" th:field="*{name}" th:placeholder="#{user.label.name}" />
+                                        <input id="inputName" class="form-control form-control-sm" type="text" style="background: #F5EAC1;" th:placeholder="#{user.label.name}" />
                                     </div>
 
                                     <div class="form-group">
                                         <label for="inputLast" class="font-weight-bold" th:utext="#{user.label.lastName}">Lastname</label>
-                                        <span th:if="${#fields.hasErrors('lastName')}" th:style="${'color:red;'}" th:errors="*{lastName}">LastName Error</span>
-                                        <input id="inputLast" class="form-control form-control-sm" type="text" style="background: #F5EAC1;" th:field="*{lastName}" th:placeholder="#{user.label.lastName}" />
+                                        <input id="inputLast" class="form-control form-control-sm" type="text" style="background: #F5EAC1;" th:placeholder="#{user.label.lastName}" />
                                     </div>
 
                                     <div class="form-group">
                                         <label for="inputAge" class="font-weight-bold" th:utext="#{user.label.age}">Age</label>
-                                        <span th:if="${#fields.hasErrors('age')}" th:style="${'color:red;'}" th:errors="*{age}">Age Error</span>
-                                        <input id="inputAge" class="form-control form-control-sm" type="number" th:field="*{age}" th:placeholder="#{user.label.age}" />
+                                        <input id="inputAge" class="form-control form-control-sm" type="number" th:placeholder="#{user.label.age}" />
                                     </div>
 
                                     <div class="form-group">
                                         <label for="inputEmail" class="font-weight-bold" th:utext="#{user.label.email}">Email</label>
-                                        <span th:if="${#fields.hasErrors('email')}" th:style="${'color:red;'}" th:errors="*{email}">Email Error</span>
-                                        <input id="inputEmail" class="form-control form-control-sm" type="email" style="background: #F5EAC1;" th:field="*{email}" th:placeholder="#{user.label.email}" />
+                                        <input id="inputEmail" class="form-control form-control-sm" type="email" style="background: #F5EAC1;" th:placeholder="#{user.label.email}" />
                                     </div>
 
                                     <div class="form-group">
                                         <label for="inputPassword" class="font-weight-bold" th:utext="#{user.label.password}">Password</label>
-                                        <span th:if="${#fields.hasErrors('password')}" th:style="${'color:red;'}" th:errors="*{password}">Password Error</span>
-                                        <input id="inputPassword" class="form-control form-control-sm" type="password" th:field="*{password}" th:placeholder="#{user.label.password}" />
+                                        <input id="inputPassword" class="form-control form-control-sm" type="text" th:placeholder="#{user.label.password}" />
                                     </div>
 
                                     <div class="form-group">
                                         <label for="selectRole" class="font-weight-bold">Role</label>
-                                        <select multiple id="selectRole" class="form-control" th:field="*{enumRoles}" size="2" aria-describedby="roleHelp">
+                                        <select multiple id="selectRole" class="form-control" size="2" aria-describedby="roleHelp">
                                             <option th:each="role : ${T(jm.spring.rest.entity.Roles).values()}"
                                                     th:value="${role}"
                                                     th:utext="${role}"> Как сделать активной строку в зависимости от имеющейся роли и не работает selectpicker
@@ -181,7 +147,7 @@
                                         </select>
                                         <small id="roleHelp" class="form-text text-muted text-left" th:utext="#{adduser.roles.hint}">Ctrl+</small>
                                     </div>
-                                    <button class="btn btn-success" type="submit" th:inline="text">[[#{adduser.btn.add}]]</button>
+                                    <button class="btn btn-success" id="btnAdd" type="submit" th:inline="text">[[#{adduser.btn.add}]]</button>
                                 </form>
                             </div>
                             <!-- конец ДАННЫЕ ПОЛЬЗОВАТЕЛЯ -->
@@ -198,7 +164,7 @@
 
 
 <div class="formEdit">
-    <form id="formModal" th:action="@{{home}/save(home=${urlRoot})}" th:object="${user}" th:method="post">
+    <form id="formModal" th:action="@{/api/users}" th:object="${user}" th:method="put">
         <div aria-hidden="true" aria-labelledby="myModalTitle" class="modal fade"
              id="myModal" role="dialog"
              tabindex="-1">
@@ -261,7 +227,7 @@
                         </button>
                         <!-- Делаем на форме 2 кнопки и манипулируем видимостью из JS -->
                         <input class="btn btn-primary" id="btnEditModal" type="submit"  th:value="#{tblusers.btn.edit}"/>
-                        <input class="btn btn-danger" id="btnDeleteModal" type="submit"  th:value="#{tblusers.btn.delete}"/>
+                        <input class="btn btn-danger" id="btnDeleteModal" data-dismiss="modal" th:value="#{tblusers.btn.delete}"/>
                     </div>
                 </div>
             </div>
@@ -277,122 +243,228 @@
 <script>
     $(document).ready(function(){
         var url = '/api/users';
+        var tableUsers = $('#tableUsersBody');
+        var idDelete = 0; // номер удаляемого юзера для api
+        var idEdit = 0; //номер редактируемого юзера
 
-        document.getElementById('btnEdit').onclick = function () {
-            var num = $(this).attr('num');
-            alert(num);
-        };
+        function getUsers() {
+            fetch(url)
+            .then(response => response.json())
+            .then(json => {
+                let users = json;
+                var text = 'Привет ' + json;
+                console.log(text);
+                users.forEach(function (user) {
+                    let tr = '<tr id="trUser' + user.id + '">';
+                    tr += '<td>' + user.id + '</td>';
+                    tr += '<td>' + user.name + '</td>';
+                    tr += '<td>' + user.lastName + '</td>';
+                    tr += '<td>' + user.age + '</td>';
+                    tr += '<td>' + user.email + '</td>';
+                    tr += '<td>';
+                    tr += user.roles.map(x => '<span>' + x + '</span>').join(' ');
+                    tr += '</td>';
+                    tr += '<td><a class="btn btn-primary btnEdit" id="btnEdit' + user.id + '">[[#{tblusers.btn.edit}]]</a></td>';
+                    tr += '<td><a class="btn btn-danger btnDelete" id="btnDelete' + user.id + '">[[#{tblusers.btn.delete}]]</a></td>';
+                    tr += '</tr>';
 
-        $('.btnDelete').on('click', function (event) {
-//            $('.btnDelete, .btnEdit').on('click', function (event) {
-            event.preventDefault();
-            var href = $(this).attr('href');
-            //загружаем данные о пользователе
-            $.get(href, function (user, status) {
-                $('.formEdit #idEdit').val(user.id);
-                $('.formEdit #idValue').val(user.id);
-                $('.formEdit #nameEdit').val(user.name);
-                $('.formEdit #lastNameEdit').val(user.lastName);
-                $('.formEdit #ageEdit').val(user.age);
-                $('.formEdit #emailEdit').val(user.email);
-                $('.formEdit #passwordEdit').val(user.password);
-                //$('.formEdit #roleEdit').val(user.);
+                    tableUsers.append(tr);
+
+                    let button = document.getElementById('btnEdit' + user.id);
+                    button.onclick = function () {btnEditDeleteClick(button, user.id);}
+
+                    let butDelete = document.getElementById('btnDelete' + user.id);
+                    butDelete.onclick = function () {btnEditDeleteClick(butDelete, user.id);}
+                })
             });
-            //идентифицируем выполняемую операцию
-            var textThis = $(this).text(); //получим Edit или Delete
-            var textEdit = document.getElementById('textEdit').value;
-            if (textThis === textEdit) {
-                //редактирование
-                //установить заголовок
-                $('.formEdit #myModalTitle').text(document.getElementById('titleEdit').value);
-                //показать пароль
-                $('.formEdit #passwordEdit').removeAttr('disabled');
-                document.getElementById('grpPassword').hidden=false;
-                //разблокировать все инпуты
-                $('.formEdit #nameEdit').removeAttr('disabled');
-                $('.formEdit #lastNameEdit').removeAttr('disabled');
-                $('.formEdit #ageEdit').removeAttr('disabled');
-                $('.formEdit #emailEdit').removeAttr('disabled');
-                $('.formEdit #roleEdit').removeAttr('disabled');
-                //скрыть/показать кнопки
-                $('.formEdit #btnEditModal').attr({'type':'submit'});
-                $('.formEdit #btnDeleteModal').attr({'type':'hidden'});
-                //меняем у form аттрибуты action и method
-                var i = href.lastIndexOf('/');
-                if(i > 0) {
-                    var path = href.substring(0,i);
-                    var newHref = path.replace('findOne','save');
-                    $('.formEdit #formModal').attr({'action':newHref});
-                    $('.formEdit #formModal').attr({'method':'post'});
-                    // $('.formEdit #formModal').attr('method','post');
+        }
+
+        getUsers();
+
+
+        function btnEditDeleteClick (button, num) {
+            let urlUser = url + '/' + num;
+            //загружаем данные о пользователе
+            fetch(urlUser)
+                .then(response => response.json())
+                .then(json => {
+                    let user = json;
+                    var text = 'Привет ' + json;
+                    text += ' ' + user.id;
+                    text += ' ' + user.email;
+                    console.log(text);
+
+                    $('.formEdit #idEdit').val(user.id);
+                    $('.formEdit #idValue').val(user.id);
+                    $('.formEdit #nameEdit').val(user.name);
+                    $('.formEdit #lastNameEdit').val(user.lastName);
+                    $('.formEdit #ageEdit').val(user.age);
+                    $('.formEdit #emailEdit').val(user.email);
+                    $('.formEdit #passwordEdit').val(user.password);
+                    //$('.formEdit #roleEdit').val(user.);
+                    //идентифицируем выполняемую операцию
+                    let textThis = $(button).text(); //получим Edit или Delete
+                    let textEdit = document.getElementById('textEdit').value;
+                    if (textThis === textEdit) {
+                        //редактирование
+                        //установить заголовок
+                        $('.formEdit #myModalTitle').text(document.getElementById('titleEdit').value);
+                        //показать пароль
+                        $('.formEdit #passwordEdit').removeAttr('disabled');
+                        document.getElementById('grpPassword').hidden=false;
+                        //разблокировать все инпуты
+                        $('.formEdit #nameEdit').removeAttr('disabled');
+                        $('.formEdit #lastNameEdit').removeAttr('disabled');
+                        $('.formEdit #ageEdit').removeAttr('disabled');
+                        $('.formEdit #emailEdit').removeAttr('disabled');
+                        $('.formEdit #roleEdit').removeAttr('disabled');
+                        //скрыть/показать кнопки
+                        $('.formEdit #btnEditModal').attr({'type':'submit'});
+                        $('.formEdit #btnDeleteModal').attr({'type':'hidden'});
+                        //устанавливаем idEdit для обработчика кнопки btnEditModal
+                        idEdit = user.id;
+                        //меняем у form аттрибуты action и method
+                        //ЗДЕСЬ УСТАНАВЛИВАЕМ МЕТОД PUT
+                        // let i = href.lastIndexOf('/');
+                        // if(i > 0) {
+                        //     let path = href.substring(0,i);
+                        //     let newHref = path.replace('findOne','save');
+                        //     $('.formEdit #formModal').attr({'action':newHref});
+                        //     $('.formEdit #formModal').attr({'method':'post'});
+                        //     // $('.formEdit #formModal').attr('method','post');
+                        // }
+                    } else {
+                        //удаление
+                        //установить заголовок
+                        $('.formEdit #myModalTitle').text(document.getElementById('titleDelete').value);
+                        //скрыть пароль
+                        $('.formEdit #passwordEdit').attr({'disabled':'disabled'});
+                        document.getElementById('grpPassword').hidden=true;
+                        //заблокировать все инпуты
+                        $('.formEdit #nameEdit').attr({'disabled':'disabled'});
+                        $('.formEdit #lastNameEdit').attr({'disabled':'disabled'});
+                        $('.formEdit #ageEdit').attr({'disabled':'disabled'});
+                        $('.formEdit #emailEdit').attr({'disabled':'disabled'});
+                        $('.formEdit #roleEdit').attr({'disabled':'disabled'});
+                        //скрыть/показать кнопки
+                        $('.formEdit #btnEditModal').attr({'type':'hidden'});
+                        $('.formEdit #btnDeleteModal').attr({'type':'submit'});
+                        //устанавливаем idDelete для обработчика кнопки btnDeleteModal
+                        idDelete = user.id;
+                    }
+                    //показываем форму
+                    $('.formEdit #myModal').modal("show");
+                });
+        }
+
+
+        $('.formEdit #btnDeleteModal').on('click',function () {
+            console.log('Отправляю запрос по адресу '+url + '/' + idDelete +' и закрываю окно');
+            fetch(url + '/' + idDelete, {
+                method:'DELETE'
+            })
+                .then(response => response.text())
+                .then(text => {
+                    console.log('Получен ответ ' + text);
+                    if(text.indexOf('OK.') === 0) {
+                        let name = '#trUser'+idDelete;
+                        $(name).remove(); //удалить строку из таблицы после успешного DELETE
+                    } else {
+                        alert(text);
+                    }
+                });
+        }) //btnDeleteModal конец
+
+
+        function Role(roles) {
+            name: roles;
+        }
+
+        function User(id, name, last, age, email, password, roles) {
+            this.id = id;
+            this.name = name;
+            this.lastName = last;
+            this.age = age;
+            this.email = email;
+            this.password = password;
+            this.roles = Role(roles);
+        }
+
+
+        $('#formAddUser').on('submit', function (event) {
+            event.preventDefault(); //блокируем перезагрузку страницы
+            console.log('Нажата ADD');
+            let name = document.getElementById('inputName');
+            let lastName = document.getElementById('inputLast');
+            let age = document.getElementById('inputAge');
+            let email = document.getElementById('inputEmail');
+            let password = document.getElementById('inputPassword');
+            let roles = document.getElementById('selectRole');
+
+
+            //создать объект с данными с формы
+//            let user = new User(0, name.value, lastName.value, age.value, email.value, password.value, roles.options[roles.selectedIndex].value);
+            user = '{"id":0,"email":"asd@qwe","name":"Ivan","lastName":"Sidorov","age":22,"password":"123","roles":["USER"]}';
+            console.log('Получился user ' + user);
+
+            //отправить
+            fetch(url, {
+                method:'POST',
+                headers: {
+                    'Content-Type': 'application/json;charset=utf-8'
+                },
+                body: user
+                //JSON.stringify(user) отдать просто юзера
+            })
+            .then(response => {
+                if(response.ok) {
+                    console.log('response.OK');
+                } else {
+                    console.log('response.NOT');
                 }
-            } else {
-                //удаление
-                //установить заголовок
-                $('.formEdit #myModalTitle').text(document.getElementById('titleDelete').value);
-                //скрыть пароль
-                $('.formEdit #passwordEdit').attr({'disabled':'disabled'});
-                document.getElementById('grpPassword').hidden=true;
-                //заблокировать все инпуты
-                $('.formEdit #nameEdit').attr({'disabled':'disabled'});
-                $('.formEdit #lastNameEdit').attr({'disabled':'disabled'});
-                $('.formEdit #ageEdit').attr({'disabled':'disabled'});
-                $('.formEdit #emailEdit').attr({'disabled':'disabled'});
-                $('.formEdit #roleEdit').attr({'disabled':'disabled'});
-                //скрыть/показать кнопки
-                $('.formEdit #btnEditModal').attr({'type':'hidden'});
-                $('.formEdit #btnDeleteModal').attr({'type':'submit'});
-                //меняем у form аттрибуты action и method
-                var newHref = href.replace('findOne','delete');
-                $('.formEdit #formModal').attr({'action':newHref});
-                $('.formEdit #formModal').attr({'method':'get'});
-            }
-            //показываем форму
-            $('.formEdit #myModal').modal("show");
-        });
+                response.json()
+            })
+            .then(json => {
+                console.log('Получен ответ ' + json);
+                // if(text.indexOf('OK.') === 0) {
+                //     let name = '#trUser'+idDelete;
+                //     $(name).remove(); //удалить строку из таблицы после успешного DELETE
+                // } else {
+                //     alert(text);
+                // }
+            });
+
+            //если успешно, то
+            //перезагрузить таблицу юзеров
+
+        }) //formAddUser конец
+
+        function btnEditModalClick() {
+            console.log(url + '/' + 8);
+
+            // let user = {
+            //     name: 'John',
+            //     surname: 'Smith'
+            // };
+            //
+            // let response = await fetch('/article/fetch/post/user', {
+            //     method: 'POST',
+            //     headers: {
+            //         'Content-Type': 'application/json;charset=utf-8'
+            //     },
+            //     body: JSON.stringify(user)
+            // });
+            //
+            // let result = await response.json();
+            // alert(result.message);
+
+        }
+
+        $('.formEdit #btnEditModal').on('click', btnEditModalClick()) //btnDeleteModal конец
+
+
     });
 
-    $('#btnScript').on('click', function (event) {
-
-        var url = 'http://localhost:8080/api/users/2';
-        $('#idUsers').append('<tr><td>iddd</td>'+
-            '<td>EEMail</td>' +
-            '<td>NNAAAMMME</td>' +
-            '<td>LASTName</td>' +
-            '<td>AGEEE</td></tr>');
-
-        console.log("Вызываю getJSON");
-        $.getJSON(url, function (data) {
-            console.log(typeof data, data);
-            // var obj = JSON.parse(data);
-            // console.log(typeof obj, obj);
-            //
-            // var x = document.getElementById("brand");
-            // var option = document.createElement("option");
-            // option.text = "hello";
-            // x.add(option);
-
-            // for(var i=0; i<5;i++) {
-             $('#idUsers').append('<tr><td>' + data.id + '</td>'+
-                '<td>' + data.email + '</td>' +
-                '<td>' + data.name + '</td>' +
-                '<td>' + data.lastName + '</td>' +
-                 '<td>' + data.age + '</td></tr>');
-            // }
-
-            // $('#users').append('<tr><td>iddd</td>'+
-            //     '<td>EEMail</td>' +
-            //     '<td>NNAAAMMME</td>' +
-            //     '<td>LASTName</td>' +
-            //     '<td>AGEEE</td></tr>');
-            $('#idLabel2').text('JSON выполнен');
-
-        });
-
-        $('#idLabel').text('Операция выполнена');
-
-
-    }); //btnScript
 
 </script>
 
