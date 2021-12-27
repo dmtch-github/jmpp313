@@ -45,7 +45,7 @@
 
                     <!-- начало НАЗВАНИЯ ТАБОВ -->
                     <ul class="nav nav-tabs" id="myTab" role="tablist">
-                        <li class="nav-item" role="presentation">
+                        <li class="nav-item" id="tabAdmin" role="presentation">
                             <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true" th:utext="#{tab.tblusers.name}">TAB1</a>
                         </li>
                         <li class="nav-item" role="presentation">
@@ -164,7 +164,7 @@
 
 
 <div class="formEdit">
-    <form id="formModal" th:action="@{/api/users}" th:object="${user}" th:method="put">
+    <form id="formModal" action="#" method="#">
         <div aria-hidden="true" aria-labelledby="myModalTitle" class="modal fade"
              id="myModal" role="dialog"
              tabindex="-1">
@@ -179,39 +179,39 @@
                     </div>
                     <div class="modal-body text-center justify-content-center">
                         <div class="form-group">
-                            <input id="idValue" type="hidden" th:field="*{id}"/>
+                            <input id="idValue" type="hidden"/>
                             <label class="font-weight-bold" for="idEdit" th:utext="#{user.label.id}">ID</label>
-                            <input class="form-control form-control-sm" id="idEdit" name="idEdit" type="text" value="" disabled/>
+                            <input class="form-control form-control-sm" id="idEdit" type="text" value="" disabled/>
                         </div>
 
                         <div class="form-group">
                             <label class="font-weight-bold" for="nameEdit" th:utext="#{user.label.name}">Name</label>
-                            <input class="form-control form-control-sm" id="nameEdit" name="nameEdit" type="text" th:field="*{name}" th:placeholder="#{user.label.name}" />
+                            <input class="form-control form-control-sm" id="nameEdit" type="text" th:placeholder="#{user.label.name}" />
                         </div>
 
                         <div class="form-group">
                             <label class="font-weight-bold" for="lastNameEdit" th:utext="#{user.label.lastName}">Lastname</label>
-                            <input class="form-control form-control-sm" id="lastNameEdit" type="text" th:field="*{lastName}" th:placeholder="#{user.label.lastName}" />
+                            <input class="form-control form-control-sm" id="lastNameEdit" type="text" th:placeholder="#{user.label.lastName}" />
                         </div>
 
                         <div class="form-group">
                             <label class="font-weight-bold" for="ageEdit" th:utext="#{user.label.age}">Age</label>
-                            <input class="form-control form-control-sm" id="ageEdit" type="number" th:field="*{age}" th:placeholder="#{user.label.age}" />
+                            <input class="form-control form-control-sm" id="ageEdit" type="number" th:placeholder="#{user.label.age}" />
                         </div>
 
                         <div class="form-group">
                             <label class="font-weight-bold" for="emailEdit" th:utext="#{user.label.email}">Email</label>
-                            <input class="form-control form-control-sm" id="emailEdit" type="text" th:field="*{email}" th:placeholder="#{user.label.email}" />
+                            <input class="form-control form-control-sm" id="emailEdit" type="text" th:placeholder="#{user.label.email}" />
                         </div>
 
                         <div class="form-group" id="grpPassword">
                             <label class="font-weight-bold" for="passwordEdit" th:utext="#{user.label.password}">Password</label>
-                            <input class="form-control form-control-sm" id="passwordEdit" type="password" th:field="*{password}" th:placeholder="#{user.label.password}" />
+                            <input class="form-control form-control-sm" id="passwordEdit" type="password" th:placeholder="#{user.label.password}" />
                         </div>
 
                         <div class="form-group">
                             <label class="font-weight-bold" for="roleEdit" th:text="#{user.label.role}">Role</label>
-                            <select class="form-control" multiple id="roleEdit" th:field="*{enumRoles}" size="2">
+                            <select class="form-control" multiple id="roleEdit" size="2">
                                 <option th:each="role : ${T(jm.spring.rest.entity.Roles).values()}"
                                         th:value="${role}"
                                         th:utext="${role}">
@@ -226,7 +226,7 @@
                                 type="button">Close
                         </button>
                         <!-- Делаем на форме 2 кнопки и манипулируем видимостью из JS -->
-                        <input class="btn btn-primary" id="btnEditModal" type="submit"  th:value="#{tblusers.btn.edit}"/>
+                        <input class="btn btn-primary" id="btnEditModal" th:value="#{tblusers.btn.edit}"/>
                         <input class="btn btn-danger" id="btnDeleteModal" data-dismiss="modal" th:value="#{tblusers.btn.delete}"/>
                     </div>
                 </div>
@@ -244,44 +244,163 @@
     $(document).ready(function(){
         var url = '/api/users';
         var tableUsers = $('#tableUsersBody');
-        var idDelete = 0; // номер удаляемого юзера для api
-        var idEdit = 0; //номер редактируемого юзера
+        var idDeleteNum = 0; // номер удаляемого юзера для api
+        var idEditNum = 0; //номер редактируемого юзера
 
-        function getUsers() {
-            fetch(url)
-            .then(response => response.json())
-            .then(json => {
-                let users = json;
-                var text = 'Привет ' + json;
-                console.log(text);
-                users.forEach(function (user) {
-                    let tr = '<tr id="trUser' + user.id + '">';
-                    tr += '<td>' + user.id + '</td>';
-                    tr += '<td>' + user.name + '</td>';
-                    tr += '<td>' + user.lastName + '</td>';
-                    tr += '<td>' + user.age + '</td>';
-                    tr += '<td>' + user.email + '</td>';
-                    tr += '<td>';
-                    tr += user.roles.map(x => '<span>' + x + '</span>').join(' ');
-                    tr += '</td>';
-                    tr += '<td><a class="btn btn-primary btnEdit" id="btnEdit' + user.id + '">[[#{tblusers.btn.edit}]]</a></td>';
-                    tr += '<td><a class="btn btn-danger btnDelete" id="btnDelete' + user.id + '">[[#{tblusers.btn.delete}]]</a></td>';
-                    tr += '</tr>';
 
-                    tableUsers.append(tr);
+//ФУНКЦИИ МОДАЛЬНОГО ОКНА
 
-                    let button = document.getElementById('btnEdit' + user.id);
-                    button.onclick = function () {btnEditDeleteClick(button, user.id);}
+        //обработчик модального окна Удалить пользователя
+        $('.formEdit #btnDeleteModal').on('click',function () {
+            console.log('Отправляю запрос по адресу '+url + '/' + idDeleteNum +' и закрываю окно');
+            fetch(url + '/' + idDeleteNum, {
+                method:'DELETE'
+            })
+                .then(response => response.text())
+                .then(text => {
+                    if(text.indexOf('OK.') === 0) {
+                        let name = '#trUser'+idDeleteNum;
+                        $(name).remove(); //удалить строку из таблицы после успешного DELETE
+                    } else {
+                        alert(text);
+                    }
+                });
+        }) //btnDeleteModal конец
 
-                    let butDelete = document.getElementById('btnDelete' + user.id);
-                    butDelete.onclick = function () {btnEditDeleteClick(butDelete, user.id);}
-                })
-            });
+
+        $('#formModal').on('submit', function (event) {
+            event.preventDefault(); //блокируем перезагрузку страницы
+            console.log('Обработчик формы submit')
+
+            let id = document.getElementById('idEdit');
+            let name = document.getElementById('nameEdit');
+            let lastName = document.getElementById('lastNameEdit');
+            let age = document.getElementById('ageEdit');
+            let email = document.getElementById('emailEdit');
+            let password = document.getElementById('passwordEdit');
+            let roles = document.getElementById('roleEdit');
+
+            //создать объект с данными с формы
+            let user = new User(id.value, name.value, lastName.value, age.value, email.value, password.value, roles.options[roles.selectedIndex].value);
+            console.log('PUT: Создан обхект '+user)
+            //user = '{"id":0,"email":"asd@qwe","name":"Ivan","lastName":"Sidorov","age":22,"password":"123","roles":["USER"]}';
+
+            fetch(url, {
+                method:'PUT',
+                headers: {
+                    'Content-Type': 'application/json;charset=utf-8'
+                },
+                body: JSON.stringify(user)
+            })
+                .then(response => response.json())
+                .then(json => {
+                    console.log('PUT: Получен ответ ' + json);
+                    user = json;
+
+                    // let trUserId = '#trUser'+idEditNum;
+                    // console.log('Удаляю строку '+trUserId);
+
+                    //$(trUserId).remove(); //удалить строку из таблицы после успешного DELETE
+                    addUserToTable(user, true); //заменить юзера в таблице
+                    //$(trUserId).replaceWith(  data.html );
+
+
+                });
+            $('.formEdit #myModal').modal('toggle');
+        }) //formModal конец
+
+
+
+
+//ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ И ОБРАБОТЧИКИ ГЛАВНОЙ ФОРМЫ
+
+        //Конструктор объекта User для отправки через JSON
+        function User(id, name, last, age, email, password, roles) {
+            this.id = id;
+            this.email = email;
+            this.name = name;
+            this.lastName = last;
+            this.age = age;
+            this.password = password;
+            this.roles = new Array();
+            this.roles[0] = roles;
         }
 
-        getUsers();
+
+        //Добавляет строку пользователя в таблицу "Список пользователей"
+        function addUserToTable(user, replace) {
+            let tr = '<tr id="trUser' + user.id + '">';
+            tr += '<td>' + user.id + '</td>';
+            tr += '<td>' + user.name + '</td>';
+            tr += '<td>' + user.lastName + '</td>';
+            tr += '<td>' + user.age + '</td>';
+            tr += '<td>' + user.email + '</td>';
+            tr += '<td>';
+            tr += user.roles.map(x => '<span>' + x + '</span>').join(' ');
+            tr += '</td>';
+            tr += '<td><a class="btn btn-primary btnEdit" id="btnEdit' + user.id + '">[[#{tblusers.btn.edit}]]</a></td>';
+            tr += '<td><a class="btn btn-danger btnDelete" id="btnDelete' + user.id + '">[[#{tblusers.btn.delete}]]</a></td>';
+            tr += '</tr>';
+
+            if (replace) {
+                let trUserId = '#trUser'+user.id;
+                console.log('Заменяю строку ' + trUserId)
+                $(trUserId).replaceWith(tr);
+            } else {
+                console.log('Добавляю строку ' +user.id);
+                tableUsers.append(tr);
+            }
+
+            let button = document.getElementById('btnEdit' + user.id);
+            button.onclick = function () {btnEditDeleteClick(button, user.id);}
+
+            let butDelete = document.getElementById('btnDelete' + user.id);
+            butDelete.onclick = function () {btnEditDeleteClick(butDelete, user.id);}
+        }
 
 
+        //обработчик Добавить нового пользователя
+        $('#formAddUser').on('submit', function (event) {
+            event.preventDefault(); //блокируем перезагрузку страницы
+
+            let name = document.getElementById('inputName');
+            let lastName = document.getElementById('inputLast');
+            let age = document.getElementById('inputAge');
+            let email = document.getElementById('inputEmail');
+            let password = document.getElementById('inputPassword');
+            let roles = document.getElementById('selectRole');
+
+            //создать объект с данными с формы
+            let user = new User(0, name.value, lastName.value, age.value, email.value, password.value, roles.options[roles.selectedIndex].value);
+            //user = '{"id":0,"email":"asd@qwe","name":"Ivan","lastName":"Sidorov","age":22,"password":"123","roles":["USER"]}';
+
+            fetch(url, {
+                method:'POST',
+                headers: {
+                    'Content-Type': 'application/json;charset=utf-8'
+                },
+                body: JSON.stringify(user)
+            })
+                .then(response => response.json())
+                .then(json => {
+                    console.log('Получен ответ ' + json);
+                    user = json;
+                    addUserToTable(user,false); //добавить юзера в таблицу
+
+                    //очистить поля ввода
+                    name.value = '';
+                    lastName.value = '';
+                    age.value = '';
+                    email.value = '';
+                    password.value = '';
+                    roles.selectedIndex = -1;
+                });
+            //переход на закладку "Список пользователей"
+            document.querySelector('#home-tab').click();
+        }) //formAddUser конец
+
+
+        //обработчик Изменить и Удалить пользователя
         function btnEditDeleteClick (button, num) {
             let urlUser = url + '/' + num;
             //загружаем данные о пользователе
@@ -321,18 +440,8 @@
                         //скрыть/показать кнопки
                         $('.formEdit #btnEditModal').attr({'type':'submit'});
                         $('.formEdit #btnDeleteModal').attr({'type':'hidden'});
-                        //устанавливаем idEdit для обработчика кнопки btnEditModal
-                        idEdit = user.id;
-                        //меняем у form аттрибуты action и method
-                        //ЗДЕСЬ УСТАНАВЛИВАЕМ МЕТОД PUT
-                        // let i = href.lastIndexOf('/');
-                        // if(i > 0) {
-                        //     let path = href.substring(0,i);
-                        //     let newHref = path.replace('findOne','save');
-                        //     $('.formEdit #formModal').attr({'action':newHref});
-                        //     $('.formEdit #formModal').attr({'method':'post'});
-                        //     // $('.formEdit #formModal').attr('method','post');
-                        // }
+                        //устанавливаем idEditNum для обработчика кнопки btnEditModal
+                        idEditNum = user.id;
                     } else {
                         //удаление
                         //установить заголовок
@@ -349,8 +458,8 @@
                         //скрыть/показать кнопки
                         $('.formEdit #btnEditModal').attr({'type':'hidden'});
                         $('.formEdit #btnDeleteModal').attr({'type':'submit'});
-                        //устанавливаем idDelete для обработчика кнопки btnDeleteModal
-                        idDelete = user.id;
+                        //устанавливаем idDeleteNum для обработчика кнопки btnDeleteModal
+                        idDeleteNum = user.id;
                     }
                     //показываем форму
                     $('.formEdit #myModal').modal("show");
@@ -358,110 +467,22 @@
         }
 
 
-        $('.formEdit #btnDeleteModal').on('click',function () {
-            console.log('Отправляю запрос по адресу '+url + '/' + idDelete +' и закрываю окно');
-            fetch(url + '/' + idDelete, {
-                method:'DELETE'
-            })
-                .then(response => response.text())
-                .then(text => {
-                    console.log('Получен ответ ' + text);
-                    if(text.indexOf('OK.') === 0) {
-                        let name = '#trUser'+idDelete;
-                        $(name).remove(); //удалить строку из таблицы после успешного DELETE
-                    } else {
-                        alert(text);
-                    }
-                });
-        }) //btnDeleteModal конец
+//ФУНКЦИИ ГЛАВНОЙ ФОРМЫ
 
-
-        function Role(roles) {
-            name: roles;
-        }
-
-        function User(id, name, last, age, email, password, roles) {
-            this.id = id;
-            this.name = name;
-            this.lastName = last;
-            this.age = age;
-            this.email = email;
-            this.password = password;
-            this.roles = Role(roles);
-        }
-
-
-        $('#formAddUser').on('submit', function (event) {
-            event.preventDefault(); //блокируем перезагрузку страницы
-            console.log('Нажата ADD');
-            let name = document.getElementById('inputName');
-            let lastName = document.getElementById('inputLast');
-            let age = document.getElementById('inputAge');
-            let email = document.getElementById('inputEmail');
-            let password = document.getElementById('inputPassword');
-            let roles = document.getElementById('selectRole');
-
-
-            //создать объект с данными с формы
-//            let user = new User(0, name.value, lastName.value, age.value, email.value, password.value, roles.options[roles.selectedIndex].value);
-            user = '{"id":0,"email":"asd@qwe","name":"Ivan","lastName":"Sidorov","age":22,"password":"123","roles":["USER"]}';
-            console.log('Получился user ' + user);
-
-            //отправить
-            fetch(url, {
-                method:'POST',
-                headers: {
-                    'Content-Type': 'application/json;charset=utf-8'
-                },
-                body: user
-                //JSON.stringify(user) отдать просто юзера
-            })
-            .then(response => {
-                if(response.ok) {
-                    console.log('response.OK');
-                } else {
-                    console.log('response.NOT');
-                }
-                response.json()
-            })
+        //запрашивает всех пользователей из БД и заполняет таблицу "Список пользователей"
+        function getUsers() {
+            fetch(url)
+            .then(response => response.json())
             .then(json => {
-                console.log('Получен ответ ' + json);
-                // if(text.indexOf('OK.') === 0) {
-                //     let name = '#trUser'+idDelete;
-                //     $(name).remove(); //удалить строку из таблицы после успешного DELETE
-                // } else {
-                //     alert(text);
-                // }
+                let users = json;
+                users.forEach(function (user) {
+                    addUserToTable(user,false);
+                })
             });
-
-            //если успешно, то
-            //перезагрузить таблицу юзеров
-
-        }) //formAddUser конец
-
-        function btnEditModalClick() {
-            console.log(url + '/' + 8);
-
-            // let user = {
-            //     name: 'John',
-            //     surname: 'Smith'
-            // };
-            //
-            // let response = await fetch('/article/fetch/post/user', {
-            //     method: 'POST',
-            //     headers: {
-            //         'Content-Type': 'application/json;charset=utf-8'
-            //     },
-            //     body: JSON.stringify(user)
-            // });
-            //
-            // let result = await response.json();
-            // alert(result.message);
-
         }
 
-        $('.formEdit #btnEditModal').on('click', btnEditModalClick()) //btnDeleteModal конец
-
+        //вызывает заполнение  таблицы "Список пользователей"
+        getUsers();
 
     });
 

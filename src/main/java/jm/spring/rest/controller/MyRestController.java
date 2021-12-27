@@ -51,6 +51,7 @@ public class MyRestController {
     public User saveUser(@RequestBody User user) {
         System.out.println("POST: Сохраню юзера "+user);
         userService.saveUser(user);
+        System.out.println("POST: Сохранил юзера "+user);
         return user;
     }
 

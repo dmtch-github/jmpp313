@@ -34,7 +34,6 @@ public class User implements UserDetails {
     @Column(name="last_name")
     private String lastName;
 
-    
     @Column(name="age")
     private byte age;
 
@@ -74,7 +73,6 @@ public class User implements UserDetails {
         return roles;
     }
 
-    @JsonIgnore
     @Override
     public String getPassword() {
         return password;
