@@ -297,14 +297,7 @@
                     console.log('PUT: Получен ответ ' + json);
                     user = json;
 
-                    // let trUserId = '#trUser'+idEditNum;
-                    // console.log('Удаляю строку '+trUserId);
-
-                    //$(trUserId).remove(); //удалить строку из таблицы после успешного DELETE
                     addUserToTable(user, true); //заменить юзера в таблице
-                    //$(trUserId).replaceWith(  data.html );
-
-
                 });
             $('.formEdit #myModal').modal('toggle');
         }) //formModal конец
@@ -328,6 +321,7 @@
 
 
         //Добавляет строку пользователя в таблицу "Список пользователей"
+        //если replace=true, то существующая строка будет заменена новой
         function addUserToTable(user, replace) {
             let tr = '<tr id="trUser' + user.id + '">';
             tr += '<td>' + user.id + '</td>';
