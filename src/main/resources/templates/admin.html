@@ -272,16 +272,18 @@
             event.preventDefault(); //блокируем перезагрузку страницы
             console.log('Обработчик формы submit')
 
-            let id = document.getElementById('idEdit');
-            let name = document.getElementById('nameEdit');
-            let lastName = document.getElementById('lastNameEdit');
-            let age = document.getElementById('ageEdit');
-            let email = document.getElementById('emailEdit');
-            let password = document.getElementById('passwordEdit');
-            let roles = document.getElementById('roleEdit');
+            let id = document.getElementById('idEdit').value;
+            let name = document.getElementById('nameEdit').value;
+            let lastName = document.getElementById('lastNameEdit').value;
+            let age = document.getElementById('ageEdit').value;
+            let email = document.getElementById('emailEdit').value;
+            let password = document.getElementById('passwordEdit').value;
+            let roles = Array.from(document.getElementById('roleEdit').selectedOptions)
+                .map(role => role.value);
 
             //создать объект с данными с формы
-            let user = new User(id.value, name.value, lastName.value, age.value, email.value, password.value, roles.options[roles.selectedIndex].value);
+            let user = new User(id, name, lastName, age, email, password, roles);
+            // let user = new User(id.value, name.value, lastName.value, age.value, email.value, password.value, roles.options[roles.selectedIndex].value);
             console.log('PUT: Создан обхект '+user)
             //user = '{"id":0,"email":"asd@qwe","name":"Ivan","lastName":"Sidorov","age":22,"password":"123","roles":["USER"]}';
 
@@ -296,7 +298,6 @@
                 .then(json => {
                     console.log('PUT: Получен ответ ' + json);
                     user = json;
-
                     addUserToTable(user, true); //заменить юзера в таблице
                 });
             $('.formEdit #myModal').modal('toggle');
@@ -315,8 +316,9 @@
             this.lastName = last;
             this.age = age;
             this.password = password;
-            this.roles = new Array();
-            this.roles[0] = roles;
+//            this.roles = new Array();
+            this.roles = roles;
+
         }
 
 
@@ -357,15 +359,16 @@
         $('#formAddUser').on('submit', function (event) {
             event.preventDefault(); //блокируем перезагрузку страницы
 
-            let name = document.getElementById('inputName');
-            let lastName = document.getElementById('inputLast');
-            let age = document.getElementById('inputAge');
-            let email = document.getElementById('inputEmail');
-            let password = document.getElementById('inputPassword');
-            let roles = document.getElementById('selectRole');
+            let name = document.getElementById('inputName').value;
+            let lastName = document.getElementById('inputLast').value;
+            let age = document.getElementById('inputAge').value;
+            let email = document.getElementById('inputEmail').value;
+            let password = document.getElementById('inputPassword').value;
+            let roles = Array.from(document.getElementById('selectRole').selectedOptions)
+                .map(role => role.value);
 
             //создать объект с данными с формы
-            let user = new User(0, name.value, lastName.value, age.value, email.value, password.value, roles.options[roles.selectedIndex].value);
+            let user = new User(0, name, lastName, age, email, password, roles);
             //user = '{"id":0,"email":"asd@qwe","name":"Ivan","lastName":"Sidorov","age":22,"password":"123","roles":["USER"]}';
 
             fetch(url, {
